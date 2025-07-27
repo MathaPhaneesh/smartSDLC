@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/*.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "index.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/analyze-requirements",
+      "dest": "/api/analyze-requirements.py"
+    },
+    {
+      "src": "/api/generate-code", 
+      "dest": "/api/generate-code.py"
+    },
+    {
+      "src": "/api/generate-tests",
+      "dest": "/api/generate-tests.py"
+    },
+    {
+      "src": "/api/chat",
+      "dest": "/api/chat.py"
+    },
+    {
+      "src": "/favicon.png",
+      "dest": "/favicon.png"
+    },
+    {
+      "src": "/",
+      "dest": "/index.html"
+    }
+  ]
+}

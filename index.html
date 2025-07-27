@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="public/favicon.png" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartSDLC - AI-Enhanced Development Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Login styles */
+        #loginSection {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            margin: 0;
+            padding: 0;
+        }
+        .login-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            margin: 0;
+        }
+        .login-container h1 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .login-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .login-btn:hover {
+            background-color: #0056b3;
+        }
+        .error-message {
+            color: #dc3545;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        /* Main application styles */
+        #mainSection {
+            display: none;
+        }
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+
+        body {
+            background-color: var(--light-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--info-color));
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1.2rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .navbar-brand i {
+            font-size: 1.6rem;
+            line-height: 1;
+            vertical-align: middle;
+        }
+
+        .nav-tabs {
+            border-bottom: 2px solid var(--light-color);
+            margin-bottom: 2rem;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            padding: 12px 24px;
+            font-weight: 500;
+            color: var(--secondary-color);
+            border-radius: 8px 8px 0 0;
+            margin-right: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs .nav-link:hover {
+            background-color: var(--light-color);
+            color: var(--primary-color);
+        }
+
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .tab-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .form-control, .form-select {
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+        }
+
+        .btn {
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--info-color));
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+        }
+
+        .result-area {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .chat-container {
+            height: 450px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .message {
+            margin: 15px 0;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 85%;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, var(--primary-color), var(--info-color));
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            background-color: white;
+            color: var(--dark-color);
+            margin-right: auto;
+            border: 1px solid #e9ecef;
+            border-bottom-left-radius: 4px;
+        }
+
+        .bot-message strong {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .bot-message ul, .bot-message ol {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .bot-message li {
+            margin: 4px 0;
+            line-height: 1.4;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 12px;
+            align-items: stretch;
+        }
+
+        .chat-input textarea {
+            flex-grow: 1;
+            resize: vertical;
+            min-height: 50px;
+            box-sizing: border-box;
+        }
+
+        .chat-input .btn {
+            height: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            border-radius: 6px;
+        }
+
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            border-radius: 6px;
+            border: none;
+        }
+
+        .card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .tab-content {
+                padding: 1rem;
+            }
+            
+            .message {
+                max-width: 95%;
+            }
+            
+            .chat-input {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .chat-input .btn {
+                width: 100%;
+            }
+        }
+
+        .footer {
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--info-color));
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer span {
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        .footer .fa-heart {
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .btn-outline-light {
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-light:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: white;
+        }
+
+        .btn-outline-light i {
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="loginSection" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f5f5f5; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1000;">
+        <div class="login-container" style="background-color: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); width: 100%; max-width: 400px;">
+            <h1 style="text-align: center; margin-bottom: 1.5rem; color: #333;">SmartSDLC Login</h1>
+            <form id="loginForm">
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                </div>
+                <button type="submit" class="login-btn" style="width: 100%; padding: 0.75rem; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem;">Login</button>
+                <div id="loginError" class="error-message" style="color: #dc3545; margin-top: 1rem; text-align: center;"></div>
+            </form>
+            <div style="margin-top: 2rem; text-align: center; color: #555; font-size: 0.95rem;">
+                
+                Username: <span style="font-family: monospace;">Ramu</span><br>
+                Password: <span style="font-family: monospace;">Ramu3421</span>
+            </div>
+        </div>
+    </div>
+    <!-- Main Application Section -->
+    <div id="mainSection" style="display: none;">
+        <nav class="navbar navbar-dark">
+            <div class="container-fluid">
+                <span class="navbar-brand mb-0 h1">
+                    <i class="fas fa-robot"></i> SmartSDLC
+                </span>
+                <button class="btn btn-outline-light" id="logoutBtn" type="button">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </nav>
+
+        <div class="container-fluid mt-4">
+            <ul class="nav nav-tabs nav-justified" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="requirements-tab" data-bs-toggle="tab" href="#requirements">
+                        <i class="fas fa-file-alt"></i> Requirements
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="code-tab" data-bs-toggle="tab" href="#code">
+                        <i class="fas fa-code"></i> Code Generation
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tests-tab" data-bs-toggle="tab" href="#tests">
+                        <i class="fas fa-vial"></i> Test Generation
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="chat-tab" data-bs-toggle="tab" href="#chat">
+                        <i class="fas fa-comments"></i> Chat Assistant
+                    </a>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <!-- Requirements Analysis Tab -->
+                <div class="tab-pane fade show active" id="requirements">
+                    <div class="row">
+                        <div class="col-12 col-md-8 mb-3 mb-md-0">
+                            <h3><i class="fas fa-search"></i> Requirements Analysis</h3>
+                            <p class="text-muted">Upload a PDF or enter text to analyze software requirements</p>
+                            
+                            <form id="requirementsForm">
+                                <div class="mb-3">
+                                    <label class="form-label"><i class="fas fa-upload"></i> Upload PDF Document</label>
+                                    <input type="file" class="form-control" accept=".pdf" name="file" id="pdfFile">
+                                    <div class="form-text">Supported format: PDF</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label"><i class="fas fa-edit"></i> Or Enter Requirements Text</label>
+                                    <textarea class="form-control" rows="6" name="text" placeholder="Enter your project requirements here..."></textarea>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary py-3 px-4">
+                                    <i class="fas fa-analytics"></i> Analyze Requirements
+                                </button>
+                            </form>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title"><i class="fas fa-info-circle"></i> What this does:</h6>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success"></i> Extracts functional requirements</li>
+                                        <li><i class="fas fa-check text-success"></i> Identifies non-functional requirements</li>
+                                        <li><i class="fas fa-check text-success"></i> Generates user stories</li>
+                                        <li><i class="fas fa-check text-success"></i> Suggests technical stack</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="result-area" id="requirementsResult"></div>
+                </div>
+
+                <!-- Code Generation Tab -->
+                <div class="tab-pane fade" id="code">
+                    <div class="row">
+                        <div class="col-12 col-md-8 mb-3 mb-md-0">
+                            <h3><i class="fas fa-code"></i> Code Generation</h3>
+                            <p class="text-muted">Generate code from natural language descriptions</p>
+                            
+                            <form id="codeForm">
+                                <div class="mb-3">
+                                    <label class="form-label"><i class="fas fa-edit"></i> Describe what you want to build</label>
+                                    <textarea class="form-control" rows="4" name="prompt" placeholder="Example: Create a REST API for user authentication with login and registration endpoints"></textarea>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label"><i class="fas fa-code"></i> Programming Language</label>
+                                            <select class="form-select" name="language" id="codeLanguageSelect">
+                                                <option value="Python">Python</option>
+                                                <option value="C">C</option>
+                                                <option value="JavaScript">JavaScript</option>
+                                                <option value="Java">Java</option>
+                                                <option value="C++">C++</option>
+                                                <option value="C#">C#</option>
+                                                <option value="Go">Go</option>
+                                                <option value="Rust">Rust</option>
+                                                <option value="PHP">PHP</option>
+                                                <option value="TypeScript">TypeScript</option>
+                                                <option value="Ruby">Ruby</option>
+                                                <option value="Kotlin">Kotlin</option>
+                                                <option value="Swift">Swift</option>
+                                                <option value="Scala">Scala</option>
+                                                <option value="Perl">Perl</option>
+                                                <option value="R">R</option>
+                                                <option value="MATLAB">MATLAB</option>
+                                                <option value="Other">Other (specify below)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label"><i class="fas fa-layer-group"></i> Framework (Optional)</label>
+                                            <input type="text" class="form-control" name="framework" placeholder="e.g., Django, React, Spring Boot">
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="text" class="form-control mt-2 d-none" name="custom_language" id="codeCustomLanguage" placeholder="Enter custom language">
+                                
+                                <button type="submit" class="btn btn-primary py-3 px-4">
+                                    <i class="fas fa-magic"></i> Generate Code
+                                </button>
+                            </form>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title"><i class="fas fa-lightbulb"></i> Code Generation Features:</h6>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success"></i> Production-ready code</li>
+                                        <li><i class="fas fa-check text-success"></i> Best practices included</li>
+                                        <li><i class="fas fa-check text-success"></i> Error handling</li>
+                                        <li><i class="fas fa-check text-success"></i> Comments and documentation</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="result-area" id="codeResult"></div>
+                </div>
+
+                <!-- Test Generation Tab -->
+                <div class="tab-pane fade" id="tests">
+                    <div class="row">
+                        <div class="col-12 col-md-8 mb-3 mb-md-0">
+                            <h3><i class="fas fa-vial"></i> Test Generation</h3>
+                            <p class="text-muted">Generate comprehensive test cases for your code</p>
+                            
+                            <form id="testsForm">
+                                <div class="mb-3">
+                                    <label class="form-label"><i class="fas fa-code"></i> Code to Test</label>
+                                    <textarea class="form-control" rows="8" name="code" placeholder="Paste your code here..."></textarea>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label"><i class="fas fa-code"></i> Programming Language</label>
+                                            <select class="form-select" name="language" id="testLanguageSelect">
+                                                <option value="Python">Python</option>
+                                                <option value="C">C</option>
+                                                <option value="JavaScript">JavaScript</option>
+                                                <option value="Java">Java</option>
+                                                <option value="C++">C++</option>
+                                                <option value="C#">C#</option>
+                                                <option value="Go">Go</option>
+                                                <option value="Rust">Rust</option>
+                                                <option value="PHP">PHP</option>
+                                                <option value="TypeScript">TypeScript</option>
+                                                <option value="Ruby">Ruby</option>
+                                                <option value="Kotlin">Kotlin</option>
+                                                <option value="Swift">Swift</option>
+                                                <option value="Scala">Scala</option>
+                                                <option value="Perl">Perl</option>
+                                                <option value="R">R</option>
+                                                <option value="MATLAB">MATLAB</option>
+                                                <option value="Other">Other (specify below)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label"><i class="fas fa-list"></i> Test Type</label>
+                                            <select class="form-select" name="test_type">
+                                                <option value="unit">Unit Tests</option>
+                                                <option value="integration">Integration Tests</option>
+                                                <option value="e2e">End-to-End Tests</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="text" class="form-control mt-2 d-none" name="custom_language" id="testCustomLanguage" placeholder="Enter custom language">
+                                
+                                <button type="submit" class="btn btn-primary py-3 px-4">
+                                    <i class="fas fa-flask"></i> Generate Tests
+                                </button>
+                            </form>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title"><i class="fas fa-shield-alt"></i> Test Coverage:</h6>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success"></i> All major functions</li>
+                                        <li><i class="fas fa-check text-success"></i> Edge cases</li>
+                                        <li><i class="fas fa-check text-success"></i> Error scenarios</li>
+                                        <li><i class="fas fa-check text-success"></i> Proper test structure</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="result-area" id="testsResult"></div>
+                </div>
+
+                <!-- Chat Assistant Tab -->
+                <div class="tab-pane fade" id="chat">
+                    <h3><i class="fas fa-robot"></i> Development Assistant</h3>
+                    <p class="text-muted">Get help with coding questions, architecture decisions, and best practices</p>
+                    
+                    <div class="chat-container" id="chat-messages">
+                        <div class="message bot-message">
+                            <strong>SmartSDLC Assistant</strong><br>
+                            Hello! I'm your AI development assistant. I can help you with:
+                            <ul>
+                                <li>Code review and optimization</li>
+                                <li>Architecture and design patterns</li>
+                                <li>Debugging and troubleshooting</li>
+                                <li>Technology recommendations</li>
+                                <li>Best practices and conventions</li>
+                            </ul>
+                            How can I assist you today?
+                        </div>
+                    </div>
+                    
+                    <form id="chatForm" class="chat-input">
+                        <textarea class="form-control" rows="2" name="message" placeholder="Ask me anything about software development..." style="resize: none;"></textarea>
+                        <button type="submit" class="btn btn-primary py-3 px-4">
+                            <i class="fas fa-paper-plane"></i> Send
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer mt-5 py-3">
+            <div class="container text-center">
+                <span class="text-white">© 2025 All Rights Reserved | Made with <i class="fas fa-heart text-danger"></i>  by Phaneesh</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Utility functions
+        function showLoading(button) {
+            button.classList.add('loading');
+            button.disabled = true;
+        }
+
+        function hideLoading(button) {
+            button.classList.remove('loading');
+            button.disabled = false;
+        }
+
+        function scrollToBottom(element) {
+            element.scrollTop = element.scrollHeight;
+        }
+
+        // Handle form submissions
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formId = form.id;
+                const submitButton = form.querySelector('button[type="submit"]');
+                
+                if (formId === 'chatForm') {
+                    await handleChatSubmission(form, submitButton);
+                } else {
+                    await handleFormSubmission(form, formId, submitButton);
+                }
+            });
+        });
+
+        async function handleChatSubmission(form, submitButton) {
+            const messageInput = form.querySelector('textarea[name="message"]');
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            const chatMessages = document.getElementById('chat-messages');
+            if (!chatMessages) {
+                console.error('Chat messages container not found');
+                return;
+            }
+            
+            // Add user message
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'message user-message';
+            userMessageDiv.textContent = message;
+            chatMessages.appendChild(userMessageDiv);
+
+            // Clear input and show loading
+            messageInput.value = '';
+            showLoading(submitButton);
+
+            // Add loading message
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message bot-message';
+            loadingDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Thinking...';
+            chatMessages.appendChild(loadingDiv);
+            scrollToBottom(chatMessages);
+
+            try {
+                const formData = new FormData();
+                formData.append('message', message);
+                
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                // Replace loading message with response
+                loadingDiv.innerHTML = formatBotMessage(data.response || 'No response generated');
+                
+            } catch (error) {
+                loadingDiv.innerHTML = `<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> Error: ${error.message}</span>`;
+            } finally {
+                hideLoading(submitButton);
+                scrollToBottom(chatMessages);
+            }
+        }
+
+        // Language dropdown logic for code generation
+        const codeLanguageSelect = document.getElementById('codeLanguageSelect');
+        const codeCustomLanguage = document.getElementById('codeCustomLanguage');
+        if (codeLanguageSelect && codeCustomLanguage) {
+            codeLanguageSelect.addEventListener('change', function() {
+                if (this.value === 'Other') {
+                    codeCustomLanguage.classList.remove('d-none');
+                    codeCustomLanguage.required = true;
+                } else {
+                    codeCustomLanguage.classList.add('d-none');
+                    codeCustomLanguage.required = false;
+                }
+            });
+        }
+        // Language dropdown logic for test generation
+        const testLanguageSelect = document.getElementById('testLanguageSelect');
+        const testCustomLanguage = document.getElementById('testCustomLanguage');
+        if (testLanguageSelect && testCustomLanguage) {
+            testLanguageSelect.addEventListener('change', function() {
+                if (this.value === 'Other') {
+                    testCustomLanguage.classList.remove('d-none');
+                    testCustomLanguage.required = true;
+                } else {
+                    testCustomLanguage.classList.add('d-none');
+                    testCustomLanguage.required = false;
+                }
+            });
+        }
+
+        // On form submit, use custom language if present
+        async function handleFormSubmission(form, formId, submitButton) {
+            const resultArea = document.getElementById(formId.replace('Form', 'Result'));
+            if (!resultArea) {
+                console.error('Result area not found for form:', formId);
+                return;
+            }
+            resultArea.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            showLoading(submitButton);
+            (async () => {
+                try {
+                    const formData = new FormData(form);
+                    // If 'Other' is selected, replace language with custom_language
+                    if (formId === 'codeForm' && codeLanguageSelect.value === 'Other') {
+                        formData.set('language', codeCustomLanguage.value.trim());
+                    }
+                    if (formId === 'testsForm' && testLanguageSelect.value === 'Other') {
+                        formData.set('language', testCustomLanguage.value.trim());
+                    }
+                    const endpoint = getEndpoint(formId);
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    resultArea.textContent = data.response || 'No response generated';
+                } catch (error) {
+                    resultArea.innerHTML = `<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> Error: ${error.message}</span>`;
+                } finally {
+                    hideLoading(submitButton);
+                }
+            })();
+        }
+
+        function getEndpoint(formId) {
+            switch(formId) {
+                case 'codeForm': return '/api/generate-code';
+                case 'testsForm': return '/api/generate-tests';
+                case 'requirementsForm': return '/api/analyze-requirements';
+                default: return '/api/chat';
+            }
+        }
+
+        function formatBotMessage(message) {
+            // Basic formatting for bot messages
+            return message
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n• /g, '\n  • ')
+                .replace(/\n/g, '<br>');
+        }
+
+        // File upload validation
+        document.getElementById('pdfFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type !== 'application/pdf') {
+                alert('Please select a PDF file only.');
+                this.value = '';
+            }
+        });
+
+        // Auto-resize textareas
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+            });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+Enter to submit forms
+            if (e.ctrlKey && e.key === 'Enter') {
+                const activeTab = document.querySelector('.tab-pane.active');
+                const form = activeTab.querySelector('form');
+                if (form) {
+                    form.dispatchEvent(new Event('submit'));
+                }
+            }
+        });
+
+        // Simple login logic (frontend only)
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('loginError');
+            if (username === 'Ramu' && password === 'Ramu3421') {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('mainSection').style.display = 'block';
+                errorDiv.textContent = '';
+                // Optionally clear form
+                document.getElementById('loginForm').reset();
+            } else {
+                errorDiv.textContent = 'Invalid username or password.';
+            }
+        });
+
+        // Logout logic
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            document.getElementById('mainSection').style.display = 'none';
+            document.getElementById('loginSection').style.display = 'flex';
+            // Optionally clear all forms/results
+            document.querySelectorAll('form').forEach(form => form.reset());
+            document.querySelectorAll('.result-area').forEach(area => area.innerHTML = '');
+            // Clear chat messages except the initial one
+            const chatMessages = document.getElementById('chat-messages');
+            if (chatMessages) {
+                while (chatMessages.children.length > 1) {
+                    chatMessages.removeChild(chatMessages.lastChild);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
